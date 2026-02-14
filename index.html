@@ -10,8 +10,7 @@ body{
     margin:0;
     overflow:hidden;
     font-family:Arial, sans-serif;
-    background: radial-gradient(circle at center, #5b00ff, #140021);
-    color:white;
+    background:black;
 }
 
 #mensaje{
@@ -22,7 +21,7 @@ body{
     background:rgba(255,255,255,0.15);
     padding:10px 20px;
     border-radius:20px;
-    font-size:18px;
+    color:white;
 }
 
 canvas{
@@ -56,9 +55,9 @@ button{
 <canvas id="canvas"></canvas>
 
 <div id="controls">
-    <input type="file" id="file" accept="audio/*" hidden>
-    <audio id="audio"></audio>
-    <button onclick="document.getElementById('file').click()">Elegir canción 🎵</button>
+<input type="file" id="file" accept="audio/*" hidden>
+<audio id="audio"></audio>
+<button onclick="document.getElementById('file').click()">Elegir canción 🎵</button>
 </div>
 
 <script>
@@ -75,7 +74,7 @@ window.addEventListener("resize", resize);
 let particles=[];
 let words=["Te Amo","Mi Reina","Hermosa","Mi Todo","Única","Mi Amor","Perla","Mi Bebé"];
 
-for(let i=0;i<200;i++){
+for(let i=0;i<250;i++){
     particles.push({
         x:Math.random()*canvas.width,
         y:Math.random()*canvas.height,
@@ -85,13 +84,29 @@ for(let i=0;i<200;i++){
 }
 
 let floatingWords=[];
-for(let i=0;i<30;i++){
+for(let i=0;i<40;i++){
     floatingWords.push({
         text:words[Math.floor(Math.random()*words.length)],
         x:Math.random()*canvas.width,
         y:Math.random()*canvas.height,
-        speed:Math.random()*0.5+0.2
+        speed:Math.random()*0.4+0.2
     });
+}
+
+function drawBackground(){
+    let gradient = ctx.createRadialGradient(
+        canvas.width/2,
+        canvas.height/2,
+        100,
+        canvas.width/2,
+        canvas.height/2,
+        canvas.width
+    );
+    gradient.addColorStop(0,"#6a00ff");
+    gradient.addColorStop(1,"#140021");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
 function drawSphere(){
@@ -109,10 +124,10 @@ function drawSphere(){
 }
 
 function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawBackground();
 
-    // partículas
     ctx.fillStyle="white";
+
     particles.forEach(p=>{
         ctx.beginPath();
         ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
@@ -125,9 +140,9 @@ function animate(){
         }
     });
 
-    // palabras
     ctx.fillStyle="rgba(255,255,255,0.8)";
     ctx.font="14px Arial";
+
     floatingWords.forEach(w=>{
         ctx.fillText(w.text,w.x,w.y);
         w.y+=w.speed;
