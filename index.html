@@ -170,6 +170,11 @@ fileInput.addEventListener("change",e=>{
         audio.play();
     }
 });
+<script>
+document.body.addEventListener("click", () => {
+    const audio = document.getElementById("audio");
+    audio.play();
+}, { once: true });
 </script>
 
 </body>
