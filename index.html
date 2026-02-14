@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Para Ti 💜</title>
 
 <style>
@@ -9,22 +10,19 @@ body{
     margin:0;
     overflow:hidden;
     font-family:Arial, sans-serif;
-    background: radial-gradient(circle at center, #6a00ff, #140021);
+    background: radial-gradient(circle at center, #5b00ff, #140021);
     color:white;
 }
 
 #mensaje{
     position:absolute;
     top:20px;
-    width:100%;
-    text-align:center;
-    font-size:22px;
-    background:rgba(255,255,255,0.1);
-    padding:10px;
-    border-radius:20px;
-    width:fit-content;
     left:50%;
     transform:translateX(-50%);
+    background:rgba(255,255,255,0.15);
+    padding:10px 20px;
+    border-radius:20px;
+    font-size:18px;
 }
 
 canvas{
@@ -41,13 +39,12 @@ canvas{
 }
 
 button{
-    padding:12px 20px;
+    padding:10px 20px;
     border:none;
     border-radius:12px;
     background:rgba(255,255,255,0.2);
     color:white;
     font-size:16px;
-    cursor:pointer;
 }
 </style>
 </head>
@@ -68,18 +65,17 @@ button{
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
 
-let particles = [];
-let words = [
-"Te Amo","Mi Reina","Hermosa","Mi Todo","Única",
-"Mi Amor","Perla","Mi Bebé","Mi Cielo","Preciosa",
-"Mi Canción Favorita","Mi Vida","Ojitos Bonitos"
-];
+let particles=[];
+let words=["Te Amo","Mi Reina","Hermosa","Mi Todo","Única","Mi Amor","Perla","Mi Bebé"];
 
-// partículas nieve
-for(let i=0;i<300;i++){
+for(let i=0;i<200;i++){
     particles.push({
         x:Math.random()*canvas.width,
         y:Math.random()*canvas.height,
@@ -88,26 +84,25 @@ for(let i=0;i<300;i++){
     });
 }
 
-// palabras flotando
 let floatingWords=[];
-for(let i=0;i<40;i++){
+for(let i=0;i<30;i++){
     floatingWords.push({
-        text: words[Math.floor(Math.random()*words.length)],
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        speed: Math.random()*0.3+0.1
+        text:words[Math.floor(Math.random()*words.length)],
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        speed:Math.random()*0.5+0.2
     });
 }
 
 function drawSphere(){
-    let x = canvas.width/2;
-    let y = canvas.height/2;
+    let x=canvas.width/2;
+    let y=canvas.height/2;
 
-    let gradient = ctx.createRadialGradient(x,y,10,x,y,80);
+    let gradient=ctx.createRadialGradient(x,y,10,x,y,80);
     gradient.addColorStop(0,"#ffffff");
     gradient.addColorStop(1,"#000000");
 
-    ctx.fillStyle = gradient;
+    ctx.fillStyle=gradient;
     ctx.beginPath();
     ctx.arc(x,y,60,0,Math.PI*2);
     ctx.fill();
@@ -116,7 +111,7 @@ function drawSphere(){
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // nieve
+    // partículas
     ctx.fillStyle="white";
     particles.forEach(p=>{
         ctx.beginPath();
@@ -133,7 +128,6 @@ function animate(){
     // palabras
     ctx.fillStyle="rgba(255,255,255,0.8)";
     ctx.font="14px Arial";
-
     floatingWords.forEach(w=>{
         ctx.fillText(w.text,w.x,w.y);
         w.y+=w.speed;
@@ -150,14 +144,14 @@ function animate(){
 
 animate();
 
-// musica
-const fileInput = document.getElementById("file");
-const audio = document.getElementById("audio");
+// música
+const fileInput=document.getElementById("file");
+const audio=document.getElementById("audio");
 
-fileInput.addEventListener("change", e=>{
-    const file = e.target.files[0];
+fileInput.addEventListener("change",e=>{
+    const file=e.target.files[0];
     if(file){
-        audio.src = URL.createObjectURL(file);
+        audio.src=URL.createObjectURL(file);
         audio.play();
     }
 });
