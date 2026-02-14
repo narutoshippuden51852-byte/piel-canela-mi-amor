@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Para mi amor ♥ Piel Canela</title>
+  <title>Te Amo Muchote ♥</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      background: #000;
       font-family: 'Segoe UI', sans-serif;
       color: #fff;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
     .container {
       position: relative;
@@ -22,84 +29,66 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      z-index: 10;
     }
     .sphere {
       position: relative;
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #4b0082, #8a2be2);
-      box-shadow: 0 0 60px rgba(138, 43, 226, 0.8);
-      animation: float 10s infinite ease-in-out;
+      background: radial-gradient(circle at 30% 30%, #000, #111, #000);
+      box-shadow: 0 0 80px rgba(255, 255, 255, 0.3);
+      animation: float 12s infinite ease-in-out;
     }
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-30px); }
+      50% { transform: translateY(-40px); }
     }
     .love-text {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2.5em;
+      font-size: 2.8em;
       color: #fff;
-      text-shadow: 0 0 20px #ff69b4;
+      text-shadow: 0 0 30px #ff69b4, 0 0 60px #ff1493;
       pointer-events: none;
-    }
-    .floating-words {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-    }
-    .word {
-      position: absolute;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.2em;
-      white-space: nowrap;
-      animation: floatWords linear infinite;
-      text-shadow: 0 0 10px #fff;
-    }
-    @keyframes floatWords {
-      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-150vh) rotate(360deg); opacity: 0; }
+      text-align: center;
+      line-height: 1.2;
     }
     .player {
       position: fixed;
-      bottom: 20px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.5);
-      padding: 15px 30px;
+      background: rgba(255, 105, 180, 0.3);
+      padding: 15px 35px;
       border-radius: 50px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px rgba(255,105,180,0.5);
-      z-index: 10;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     button {
       background: #ff69b4;
       border: none;
       color: white;
-      padding: 12px 25px;
-      border-radius: 30px;
-      font-size: 1.1em;
+      padding: 14px 30px;
+      border-radius: 40px;
+      font-size: 1.3em;
       cursor: pointer;
-      margin: 0 10px;
+      box-shadow: 0 0 20px #ff1493;
     }
-    button:hover { background: #ff1493; }
+    button:hover { background: #ff1493; transform: scale(1.05); }
   </style>
 </head>
 <body>
+  <canvas id="canvas"></canvas>
+
   <div class="container">
     <div class="sphere">
-      <div class="love-text">Te Amo Mi Vida ♥</div>
+      <div class="love-text">Te Amo Muchote<br>Mis Ojitos Brillantes ♥</div>
     </div>
-    
-    <div class="floating-words" id="words"></div>
     
     <div class="player">
       <button id="playBtn">▶ Reproducir Piel Canela</button>
@@ -110,47 +99,69 @@
   </div>
 
   <script>
-    const phrases = [
-      "Ojos negros, piel canela",
-      "Que me llegan a desesperar",
-      "Me importas tú, y tú, y tú",
-      "Y solamente tú, y tú, y tú",
-      "Te amo mucho mi amor",
-      "Piel Canela ♥",
-      "Mi reina",
-      "Mi todo",
-      "Para siempre contigo",
-      "Eres mi canción favorita",
-      "Te amo infinitamente",
-      "Mis ojos brillan por ti",
-      "Nunca te dejaré",
-      "Eres única",
-      "Mi vida entera"
-    ];
+    // Partículas más densas y explosivas como el original
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    const wordsContainer = document.getElementById('words');
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
 
-    function createWord() {
-      const word = document.createElement('div');
-      word.classList.add('word');
-      word.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-      
-      // Posición random horizontal
-      word.style.left = Math.random() * 100 + 'vw';
-      // Duración random entre 15-30s
-      const duration = Math.random() * 15 + 15;
-      word.style.animationDuration = duration + 's';
-      // Retraso random
-      word.style.animationDelay = Math.random() * 5 + 's';
-      
-      wordsContainer.appendChild(word);
-      
-      // Eliminar después de animar
-      setTimeout(() => word.remove(), duration * 1000 + 1000);
+    let particles = [];
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+        this.color = `hsl(${Math.random() * 60 + 280}, 100%, 70%)`; // tonos morados/rosa
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.size > 0.2) this.size -= 0.05;
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    // Crear palabras cada cierto tiempo
-    setInterval(createWord, 800);
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < 300; i++) { // más partículas para densidad
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 80 + 50;
+        const x = canvas.width / 2 + Math.cos(angle) * radius;
+        const y = canvas.height / 2 + Math.sin(angle) * radius;
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.size <= 0.2) {
+          particles.splice(i, 1);
+        }
+      });
+      if (particles.length < 300) {
+        initParticles(); // regenera partículas para efecto continuo
+      }
+      requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
 
     // Reproductor
     const audio = document.getElementById('song');
