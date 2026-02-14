@@ -2,126 +2,75 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
-  <title>Estrellas y Piel Canela - Móvil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Test 3D Móvil</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #000; font-family: Arial, sans-serif; touch-action: none; }
+    body { margin: 0; overflow: hidden; background: #000; }
     #overlay {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      font-size: 24px;
-      text-shadow: 0 0 10px #f0f, 0 0 20px #f0f;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ff00ff;
+      font-size: 32px;
+      text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+      text-align: center;
       pointer-events: none;
       z-index: 10;
-    }
-    #instructions {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      background: rgba(0,0,0,0.6);
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 16px;
-      z-index: 10;
-      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <div id="overlay">Te Amo Muchote Mis Ojitos Brillantes ♥</div>
-  <div id="instructions">Toca pantalla para música<br>1 dedo: girar | 2 dedos pellizco: zoom | 2 dedos deslizar: mover</div>
-
-  <audio id="musica" loop>
-    <source src="canción.mp3" type="audio/mpeg">
-  </audio>
+  <div id="overlay">Te Amo Muchote ♥<br>Mis Ojitos Brillantes</div>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/examples/js/controls/OrbitControls.min.js"></script>
 
   <script>
+    // Escena básica
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0015);
+    scene.background = new THREE.Color(0x0a0015); // morado oscuro
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.set(0, 0, 80);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5; // cerca para ver fácil
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.rotateSpeed = 0.8;
-    controls.zoomSpeed = 1.5;
-    controls.panSpeed = 0.8;
-    controls.minDistance = 15;
-    controls.maxDistance = 200;
-    controls.enableZoom = true;
-    controls.enablePan = true;
-    controls.enableRotate = true;
-
-    // Mejora para mobile: define gestos claros
-    controls.touches = {
-      ONE: THREE.TOUCH.ROTATE,      // 1 dedo → rotar
-      TWO: THREE.TOUCH.DOLLY_PAN    // 2 dedos → zoom (pellizco) + pan (deslizar)
-    };
-
-    // Estrellas
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 10000;
-    const posArray = new Float32Array(starsCount * 3);
-    for(let i = 0; i < starsCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 1400;
-    }
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const starsMaterial = new THREE.PointsMaterial({ size: 1.5, color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
-    const starField = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(starField);
-
-    // Esfera
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(12, 32, 32),
-      new THREE.MeshBasicMaterial({ color: 0x6a1b9a, transparent: true, opacity: 0.85 })
-    );
+    // Esfera morada simple (sin luces complicadas)
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0x6a1b9a, wireframe: true }); // wireframe para debug
+    const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-    const audio = document.getElementById('musica');
-    audio.volume = 0.7;
-
-    // Reproducir con cualquier toque (mejor para mobile)
-    let started = false;
-    function startAudio() {
-      if (!started) {
-        audio.play().catch(() => {});
-        started = true;
-      }
-    }
-    document.body.addEventListener('touchstart', startAudio, { once: false });
-    document.body.addEventListener('click', startAudio, { once: false });
+    // Estrellas rápidas
+    const stars = new THREE.Points(
+      new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(
+        Array.from({length: 3000}, () => (Math.random() - 0.5) * 2000), 3)),
+      new THREE.PointsMaterial({ color: 0xffffff, size: 2 })
+    );
+    scene.add(stars);
 
     function animate() {
       requestAnimationFrame(animate);
-      sphere.rotation.y += 0.0008;
-      starField.rotation.y += 0.00015;
-      controls.update();
+      sphere.rotation.y += 0.01;
+      stars.rotation.y += 0.001;
       renderer.render(scene, camera);
     }
     animate();
 
+    // Resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    // Mensaje debug en consola (abre dev tools tocando 3 veces o con remote debugging)
+    console.log("Three.js versión:", THREE.REVISION);
+    console.log("Renderer iniciado, canvas agregado");
   </script>
 </body>
 </html>
